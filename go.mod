@@ -1,4 +1,4 @@
-module github.com/rmohr/bazeldnf
+module github.com/sfc-gh-cbartoszuk/bazeldnf
 
 go 1.19
 
