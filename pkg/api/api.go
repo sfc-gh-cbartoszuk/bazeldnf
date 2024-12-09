@@ -54,19 +54,19 @@ type Alternative struct {
 
 func (f *File) SHA256() (sums []string, err error) {
 	for _, h := range f.Verification.Hash {
-		if h.Type == "sha256" {
+		if h.Type == "sha256" || h.Type == "sha" {
 			sums = append(sums, h.Hash)
 		}
 	}
 	for _, a := range f.Alternates.Alternate {
 		for _, h := range a.Verification.Hash {
-			if h.Type == "sha256" {
+			if h.Type == "sha256" || h.Type == "sha" {
 				sums = append(sums, h.Hash)
 			}
 		}
 	}
 	if len(sums) == 0 {
-		return nil, fmt.Errorf("no sha256 found")
+		return nil, fmt.Errorf("no sha256 or sha found")
 	}
 	return
 }
