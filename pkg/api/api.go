@@ -122,7 +122,7 @@ func (d *Data) SHA256() (string, error) {
 	if d.Checksum.Type == "sha" {
 		return d.Checksum.Text, nil
 	}
-	return "", fmt.Errorf("no sha256 found")
+	return "", fmt.Errorf("no sha256 found, got %q", d.Checksum.Type)
 }
 
 type Repomd struct {
