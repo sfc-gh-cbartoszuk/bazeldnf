@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"crypto/sha1"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
@@ -190,21 +191,25 @@ func (r *RepoFetcherImpl) fetchFile(fileType string, repo *bazeldnf.Repository, 
 		return fmt.Errorf("Failed to load primary repository file from %s: %v", fileURL, err)
 	}
 	sha := sha256.New()
+	sha1111 := sha1.New()
 	defer resp.Body.Close()
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return fmt.Errorf("Failed to download %s: %v ", fileURL, fmt.Errorf("status : %v", resp.StatusCode))
 	}
-	body := io.TeeReader(resp.Body, sha)
+	body := io.TeeReader(io.TeeReader(resp.Body, sha), sha1111)
 	err = r.CacheHelper.WriteToRepoDir(repo, body, fileName)
 	if err != nil {
 		return fmt.Errorf("Failed to write file.xml from %s to file: %v", fileURL, err)
 	}
-	sha256sum, err := file.SHA256()
+	sha1111sum, sha256sum, err := file.SHA256()
 	if err != nil {
 		return fmt.Errorf("failed to get sha256sum of file: %v", err)
 	}
-	if sha256sum != toHex(sha) {
+	if sha256sum != "" && sha256sum != toHex(sha) {
 		return fmt.Errorf("Expected sha256 sum %s, but got %s", sha256sum, toHex(sha))
+	}
+	if sha1111sum != "" && sha1111sum != toHex(sha1111) {
+		return fmt.Errorf("Expected sha1 sum %s, but got %s, sha1 is", sha1111sum, toHex(sha1111))
 	}
 	return nil
 }

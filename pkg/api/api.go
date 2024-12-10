@@ -115,14 +115,14 @@ type Data struct {
 	HeaderSize string `xml:"header-size"`
 }
 
-func (d *Data) SHA256() (string, error) {
+func (d *Data) SHA256() (sha1 string, sha256 string, err error) {
 	if d.Checksum.Type == "sha256" {
-		return d.Checksum.Text, nil
+		return "", d.Checksum.Text, nil
 	}
 	if d.Checksum.Type == "sha" {
-		return d.Checksum.Text, nil
+		return d.Checksum.Text, "", nil
 	}
-	return "", fmt.Errorf("no sha256 found, got %q", d.Checksum.Type)
+	return "", "", fmt.Errorf("no sha256 found, got %q", d.Checksum.Type)
 }
 
 type Repomd struct {
