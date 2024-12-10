@@ -18,6 +18,9 @@ def _bazeldnf_impl(ctx):
         transitive_dependencies.extend(ctx.attr.tar.files)
     args.extend(ctx.attr.libs)
 
+    binary = toolchain._tool.short_path
+    if ctx.attr.binary:
+        binary_override = ctx.attr.binary[DefaultInfo].files.to_list()[0].short_path
     toolchain = ctx.toolchains[BAZELDNF_TOOLCHAIN]
 
     substitutions = {
@@ -55,6 +58,7 @@ _bazeldnf = rule(
         "rpmtree": attr.string(),
         "libs": attr.string_list(),
         "tar": attr.label(allow_single_file = True),
+        "binary": attr.label(mandatory = False),
         "_runner": attr.label(
             default = "@bazeldnf//internal:runner.bash.template",
             allow_single_file = True,
